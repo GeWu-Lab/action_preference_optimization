@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Robotic Policy Learning via Human-assisted Action Preference Optimization">
+  <meta name="keywords" content="Audio-visual, modality imbalance">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Robotic Policy Learning via Human-assisted Action Preference Optimization</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.png">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+  <style>
+    /* 页面加载动画 */
+    .page-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+    
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* 滚动进度条 */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 3px;
+      background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+      z-index: 1000;
+      transition: width 0.3s ease;
+    }
+    
+    /* 返回顶部按钮 */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    
+    .back-to-top.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .back-to-top:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+    }
+
+    /* 图片居中样式 */
+    .image-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin: 1rem 0;
+    }
+    
+    .image-caption {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-style: italic;
+      color: #666;
+    }
+    
+    .image-caption p {
+      text-align: center !important;
+      margin-bottom: 0.5rem;
+    }
+    
+    .interpolation-image {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    
+    /* 视频容器样式 */
+    .video-container {
+      position: relative;
+      width: 100%;
+      margin: 2rem 0;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      background: #000;
+    }
+    
+    .video-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+    
+    /* 懒加载视频样式 */
+    .lazy-video {
+      width: 100%;
+      height: auto;
+      min-height: 300px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      position: relative;
+      display: block;
+    }
+    
+    /* 播放按钮overlay */
+    .video-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .video-overlay:hover {
+      background: rgba(0,0,0,0.5);
+    }
+    
+    .play-button {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 25px rgba(240,147,251,0.4);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .play-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 12px 35px rgba(240,147,251,0.6);
+    }
+    
+    .play-button::before {
+      content: '';
+      width: 0;
+      height: 0;
+      border-left: 20px solid #fff;
+      border-top: 12px solid transparent;
+      border-bottom: 12px solid transparent;
+      margin-left: 5px;
+    }
+    
+    /* 视频标题样式 */
+    .video-title {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+      z-index: 10;
+    }
+    
+    /* 加载状态 */
+    .video-loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 1rem;
+      display: none;
+    }
+    
+    .video-loading .loading-spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+    
+    /* 实际视频样式 */
+    .actual-video {
+      width: 100%;
+      border-radius: 15px;
+      display: none;
+    }
+    
+    .video-container.loaded .lazy-video {
+      display: none;
+    }
+    
+    .video-container.loaded .actual-video {
+      display: block;
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      .video-container {
+        margin: 1rem 0;
+      }
+      
+      .play-button {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .play-button::before {
+        border-left: 15px solid #fff;
+        border-top: 9px solid transparent;
+        border-bottom: 9px solid transparent;
+      }
+      
+      .video-title {
+        font-size: 1rem;
+        bottom: 15px;
+        left: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 页面加载动画 -->
+<div class="page-loader" id="pageLoader">
+  <div class="loader"></div>
+</div>
+
+<!-- 滚动进度条 -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- 返回顶部按钮 -->
+<button class="back-to-top" id="backToTop">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://xwinks.github.io/">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          More Research
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://gewu-lab.github.io/">
+            GeWu-Lab
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-2 publication-title">Robotic Policy Learning via Human-assisted Action Preference Optimization</h1>
+          
+          <!-- 添加研究标签 -->
+          
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://xwinks.github.io/">Wenke Xia</a><sup>1,2,3,4,*</sup>,</span>
+              <span class="author-block">
+                <a href="">Yichu Yang</a><sup>2</sup>,
+              </span>
+
+              <span class="author-block">
+              <a href="">Hongtao Wu</a><sup>2</sup>,</span>
+              <span class="author-block">
+                <a href="">Xiao Ma</a><sup>2</sup>,</span>
+                <span class="author-block">
+                  <a href="">Tao Kong</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="">Di Hu</a><sup>1,3,4,†</sup>,
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Gaoling School of Artificial Intelligence, Renmin University of China</span>
+            <span class="author-block"><sup>2</sup>ByteDance Seed</span>
+            <span class="author-block"><sup>3</sup>Beijing Key Laboratory of Research on Large Models and Intelligent Governance</span>
+            <span class="author-block"><sup>4</sup>Engineering Research Center of Next-Generation Intelligent Search and Recommendation, MOE</span>
+          </div>
+
+          <div class="is-size-7">
+            <span>* work is done during internship at ByteDance Seed, † Corresponding author</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">
+          <i class="fas fa-lightbulb" style="color: #f093fb; margin-right: 10px;"></i>
+          Abstract
+        </h2>
+        <div class="content has-text-justified">
+          <p>
+            Establishing a reliable and iteratively refined robotic system is essential for deploying real-world applications. 
+            While Vision-Language-Action (VLA) models are widely recognized as the foundation model for such robotic deployment, their dependence on expert demonstrations hinders the crucial capabilities of correction and learning from failures. To mitigate this limitation, we introduce a Human-assisted Action Preference Optimization method named <strong>HAPO</strong>, designed to correct deployment failures and foster effective adaptation through preference alignment for VLA models. 
+            This method begins with a human-robot collaboration framework for reliable failure correction and interaction trajectory collection through human intervention. These human-intervention trajectories are further employed within the action preference optimization process, facilitating VLA models to mitigate failure action occurrences while enhancing corrective action adaptation.
+            Specifically, we propose an adaptive reweighting algorithm to address the issues of irreversible interactions and token probability mismatch when introducing preference optimization into VLA models, facilitating model learning from binary desirability signals derived from interactions.
+            Through combining these modules, our human-assisted action preference optimization method ensures reliable deployment and effective learning from failure for VLA models.
+            The experiments conducted in simulation and real-world scenarios prove superior generalization and robustness of our framework across a variety of manipulation tasks. 
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">
+          <i class="fas fa-rocket" style="color: #667eea; margin-right: 10px;"></i>
+          Introduction
+        </h2>
+        <div class="content has-text-justified">
+
+          <div class="column ">
+            <div class="image-container">
+              <img src="./static/images/teaser.png"
+              class="interpolation-image"
+              alt="Our pipeline visualization"/>
+            </div>
+            <div class="image-caption">
+              <p><strong>Figure 1:</strong> Our pipeline for human-assisted action preference optimization.</p>
+            </div>
+          </div>
+
+          <p>
+            Ensuring safe interactions in unconstrained environments while fostering continuous improvement is crucial for the development of robust robotic manipulation systems in real-world scenarios.
+            Benefiting from the capacity for generalizable reasoning and scalable learning, Vision-Language-Action (VLA) models have been widely recognized as the foundation model for such robotic deployment systems.
+            However, their performance in achieving high field-ready success rates in unconstrained, unpredictable real-world environments remains a significant limitation. 
+            This discrepancy presents a key challenge: <em>how to integrate these developing Vision-Language-Action models into practical scenarios?</em>
+          </p>
+
+          <p>
+            To enable reliable deployment and stable learning from interactions, we propose a Human-assisted Action Preference Optimization method named <strong>HAPO</strong>, for autoregressive VLA models.
+            This method integrates two critical components: the human-robot collaboration framework for reliable deployment, and the action preference optimization process for iterative improvement of VLA models.
+             As shown in Figure 1(a), the human-robot collaboration deployment framework allows real-time human interventions during policy execution, ensuring reliable task completion when the robot encounters challenging situations.
+            To mitigate the proportion imbalance of corrective action, we propose a balanced sampling method to provide proportional representation of interaction data for further VLA preference optimization. 
+            As shown in Figure 1(b), we introduce the action preference optimization process to fully leverage the sub-optimal interaction trajectories for stable VLA models optimization, which helps avoid failure actions and encourages the adoption of corrective actions. 
+            Through iterative human-robot collaboration deployment and action preference optimization process, our method can continuously enhance the VLA model's capabilities via environment interaction, ensuring sustained improvements in performance and adaptability to dynamic downstream manipulation tasks.
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">
+          <i class="fas fa-cogs" style="color: #f5576c; margin-right: 10px;"></i>
+          Method
+        </h2>
+
+        <div class="content has-text-justified">
+          <h3 style="color: #667eea; border-left: 4px solid #667eea; padding-left: 15px; margin: 2rem 0 1rem 0;">Human-robot Collaboration Deployment</h3>
+          <p>
+            We first collect an expert demonstration dataset \(\mathcal{D}_e = \{\tau_e^i\}_{i=1}^{i=N}\), where each trajectory \(\tau_e^i = \{(o_t^i,a_t^i,c_t^i)\}_{t=1}^{t=T}\) consists of observation-action pairs with expert annotations. Here, \(c_t^i = 1\) indicates that action \(a_t^i\) is executed by a human expert. We employ behavior cloning to fine-tune the pretrained VLA model on these expert demonstrations, obtaining an initial base policy \(\pi_\theta^0\).
+          </p>
+          <p>
+            During policy execution, human operators monitor the process and intervene when encountering challenging scenarios. This allows us to collect interaction trajectories \(\mathcal{D}_h = \{\tau^{i}_{h}\}_{i=1}^{i=M}\), where \(c_t^i = 2\) represents human-corrected actions and \(c^i_t = 1\) denotes policy-executed actions. We re-label trajectories by categorizing actions in the \(K\) steps preceding human interventions as undesirable (\(c_t^i=0\)). Finally, we combine the expert demonstrations \(\mathcal{D}_e\) and interaction dataset \(\mathcal{D}_h\) for robotic action preference optimization.
+            The pipeline is illustrated in the <strong>Deployment function within Algorithm 1</strong>
+          </p>
+          <div class="video-container" data-video-src="./static/videos/human_collaboration.mp4">
+            <div class="lazy-video">
+              <div class="video-overlay">
+                <div class="play-button"></div>
+              </div>
+              <div class="video-title">Human-Robot Collaboration Demo</div>
+              <div class="video-loading">
+                <div class="loading-spinner"></div>
+                Loading video...
+              </div>
+            </div>
+            <video class="actual-video" controls>
+              <source src="" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+
+        <div class="content has-text-justified">
+        <h3 style="color: #f093fb; border-left: 4px solid #f093fb; padding-left: 15px; margin: 2rem 0 1rem 0;">Action Preference Optimization</h3>
+              <p>
+                Although previous Reinforcement Learning with Human Feedback (RLHF) methods have proven effective in LLM fine-tuning, there are additional challenges for the VLA models preference optimization in robotic manipulation:
+              </p>
+              <div style="background: rgba(255,107,107,0.1); padding: 1.5rem; border-radius: 10px; margin: 1rem 0; border-left: 4px solid #ff6b6b;">
+                <ul>
+                  <li>The <strong>irreversible robotic manipulation process</strong> makes it challenging to acquire meaningful paired positive-negative actions under the same observational conditions.</li>
+                  <li>The mapping of <strong>continuous robotic actions to discrete tokens</strong> by autoregressive VLAs causes a mismatch between token probability and continuous action errors, complicating preference optimization in action token prediction.</li>
+                </ul>
+              </div>
+              <p>
+                To address these fundamental challenges, we leverage <strong>Kahneman & Tversky's prospect theory</strong> as the theoretical foundation for preference alignment optimization with binary desirability signals. Building upon this framework, we propose an <strong>adaptive reweighting method</strong> specifically designed to bridge the critical gap between discrete token prediction and continuous action regression in robotic manipulation tasks.
+              </p>
+              
+                <p >
+                  Our adaptive reweighting approach intelligently guides the model to prioritize training samples that exhibit significant regression errors. The method operates by first estimating the L1 loss of the continuous action <em>l</em> for each sample, then dynamically adjusting the sample weights during training to focus computational resources on the most challenging cases.
+                </p>
+              <p>
+                The mathematical formulation and implementation details of our adaptive reweighting method are comprehensively presented in the <strong>Optimization function within Algorithm 1</strong>.
+              </p>
+        </div>
+        
+        <div class="column ">
+          <div class="image-container">
+            <img src="./static/images/algo.png"
+            class="interpolation-image"
+            alt="Our Human-assisted Action Preference Optimization Method"/>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  
+
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">
+          <i class="fas fa-chart-line" style="color: #4a90e2; margin-right: 10px;"></i>
+          Experiment
+        </h2>
+        <div class="content has-text-justified">
+            <h3 style="color: #667eea; border-left: 4px solid #667eea; padding-left: 15px; margin: 2rem 0 1rem 0;">Comparison Results</h3>
+            <div class="column ">
+                <div class="image-container">
+                  <img src="./static/images/main_result.png"
+                  class="interpolation-image"
+                  alt="Comparison experiments results"/>
+                </div>
+                <div class="image-caption">
+                  <p><strong>Table 1:</strong> Comparison experiment results across 4 manipulation tasks in RoboMimic Simulation.</p>
+                </div>
+              </div>
+
+              <p>
+                Compared with behavior cloning objective methods, our method could fully leverage the sub-optimal interaction trajectories.
+                Among all compared preference learning based methods, our method utilizes KL divergence to estimate the mean margin between the updated model and the reference model, which not only enables more stable learning but also better preserves prior knowledge. 
+                Furhter, our method leverages the adaptive reweighting method to achieve more precise control over the importance weights of both positive and negative samples, delivering more notable performance improvements.
+              </p>
+
+        </div>
+
+        <div class="content has-text-justified">
+          <h3 style="color: #93fba8; border-left: 4px solid #93fba8; padding-left: 15px; margin: 2rem 0 1rem 0;">Generalization to Novel Scenarios</h3>
+          <div class="column ">
+              <div class="image-container">
+                <img src="./static/images/disruption.png"
+                class="interpolation-image"
+                alt="Lifelong learning results"/>
+              </div>
+              <div class="image-caption">
+                <p><strong>Figure 2:</strong> The demonstrations of novel scenarios.</p>
+              </div>
+            </div>
+            <div class="column ">
+              <div class="image-container">
+                <img src="./static/images/disruption_results.png"
+                class="interpolation-image"
+                alt="Lifelong learning results"/>
+              </div>
+            </div>
+            <p>
+              Our objective is to develop a human-assisted action preference optimization method that facilitates continuous improvement, enabling performance enhancements in novel disruption scenarios while retaining original task capabilities during model fine-tuning. Thus, we evaluate the performance of the fine-tuned model across both disruption scenarios and original scenarios. 
+              The results prove that our approach can effectively adapt to new disruption scenarios through adaptive reweighting. 
+            </p>
+          </div>
+
+        <div class="content has-text-justified">
+            <h3 style="color: #f093fb; border-left: 4px solid #f093fb; padding-left: 15px; margin: 2rem 0 1rem 0;">Lifelong Learning</h3>
+            <div class="column ">
+                <div class="image-container">
+                  <img src="./static/images/continual_learning.png"
+                  class="interpolation-image"
+                  alt="Lifelong learning results"/>
+                </div>
+                <div class="image-caption">
+                  <p><strong>Figure 3:</strong> Lifelong learning results.</p>
+                </div>
+              </div>
+              <p>Our method achieves superior performance compared to the baseline, demonstrating its ability to effectively leverage sub-optimal human intervention trajectories for iterative model improvement. </p>
+        </div>
+
+        <div class="content has-text-justified">
+            <h3 style="color: #7b68ee; border-left: 4px solid #7b68ee; padding-left: 15px; margin: 2rem 0 1rem 0;">Real-world Experiments</h3>
+            <div class="column ">
+                <div class="image-container">
+                  <img src="./static/images/real_world.png"
+                  class="interpolation-image"
+                  alt="Real-world experiments"/>
+                </div>
+                <div class="image-caption">
+                  <p><strong>Figure 4:</strong> The real-world experiments.</p>
+                </div>
+              </div>
+              <p>
+                In this work, we conduct the challenging fine-grained robotic manipulation task "Insert the square into the stick" as shown in Figure 4(a), which requires the robot to grasp the square and precisely insert into the stick.
+                As demonstrated in Table 4, our method demonstrated robust adaptability to these downstream disruption scenarios. The results empirically validate the method's practical utility for real-world deployment in unstructured environments.
+              </p>
+              <div class="column ">
+                <div class="image-container">
+                  <img src="./static/images/real_world_results.png"
+                  class="interpolation-image"
+                  alt="Real-world experiments results"/>
+                </div>
+                <div class="image-caption">
+                  <p><strong>Table 4:</strong> The real-world experiments results.</p>
+                </div>
+              </div>
+        </div>
+
+        <div>
+          <div class="video-container" data-video-src="./static/videos/results.mp4">
+            <div class="lazy-video">
+              <div class="video-overlay">
+                <div class="play-button"></div>
+              </div>
+              <div class="video-title">Experimental Results Demo</div>
+              <div class="video-loading">
+                <div class="loading-spinner"></div>
+                Loading video...
+              </div>
+            </div>
+            <video class="actual-video" controls>
+              <source src="" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">
+          <i class="fas fa-flag-checkered" style="color: #ff6b6b; margin-right: 10px;"></i>
+          Conclusion
+        </h2>
+        <div class="content has-text-justified">
+          <div style="background: rgba(123,104,238,0.1); padding: 2rem; border-radius: 15px; border: 2px solid rgba(123,104,238,0.2);">
+            <p>
+              In this work, we introduce the <strong>human-assisted action preference optimization method</strong>, consisting of two critical components: a human-robot collaboration framework for reliable deployment and an action preference optimization process with adaptive reweighting for stable VLA model optimization. 
+              Through our method, we could promote continuous improvement during the deployment of VLA models. 
+              We hope our method could bring insights for efficient and effective VLA model adaptation on downstream manipulation tasks.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // 页面加载完成后隐藏加载动画
+  window.addEventListener('load', function() {
+    const loader = document.getElementById('pageLoader');
+    loader.style.opacity = '0';
+    setTimeout(() => {
+      loader.style.display = 'none';
+    }, 500);
+  });
+
+  // 滚动进度条
+  window.addEventListener('scroll', function() {
+    const scrollProgress = document.getElementById('scrollProgress');
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrollPercentage = (scrollTop / scrollHeight) * 100;
+    scrollProgress.style.width = scrollPercentage + '%';
+    
+    // 返回顶部按钮显隐
+    const backToTop = document.getElementById('backToTop');
+    if (scrollTop > 300) {
+      backToTop.classList.add('show');
+    } else {
+      backToTop.classList.remove('show');
+    }
+  });
+
+  // 返回顶部功能
+  document.getElementById('backToTop').addEventListener('click', function() {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+
+  // 平滑滚动到锚点
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth'
+        });
+      }
+    });
+  });
+
+  // 视频懒加载功能
+  function initLazyVideos() {
+    const videoContainers = document.querySelectorAll('.video-container');
+    
+    videoContainers.forEach(container => {
+      const overlay = container.querySelector('.video-overlay');
+      const loadingIndicator = container.querySelector('.video-loading');
+      const actualVideo = container.querySelector('.actual-video');
+      const videoSrc = container.dataset.videoSrc;
+      
+      overlay.addEventListener('click', function() {
+        // 显示加载指示器
+        overlay.style.display = 'none';
+        loadingIndicator.style.display = 'block';
+        
+        // 创建视频源并开始加载
+        const source = actualVideo.querySelector('source');
+        source.src = videoSrc;
+        actualVideo.load();
+        
+        // 监听视频加载完成事件
+        actualVideo.addEventListener('canplay', function() {
+          loadingIndicator.style.display = 'none';
+          container.classList.add('loaded');
+          
+          // 自动播放视频
+          actualVideo.play().catch(e => {
+            console.log('Autoplay prevented:', e);
+          });
+        }, { once: true });
+        
+        // 处理加载错误
+        actualVideo.addEventListener('error', function() {
+          loadingIndicator.style.display = 'none';
+          loadingIndicator.innerHTML = '<div style="color: #ff6b6b;">Video loading failed</div>';
+          loadingIndicator.style.display = 'block';
+        }, { once: true });
+      });
+    });
+  }
+  
+  // 页面加载完成后初始化懒加载视频
+  document.addEventListener('DOMContentLoaded', function() {
+    initLazyVideos();
+  });
+</script>
+
+</body>
+</html>

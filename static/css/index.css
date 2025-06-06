@@ -1,0 +1,447 @@
+/* 添加现代化的全局样式和动画效果 */
+:root {
+  --primary-color: #4a90e2;
+  --secondary-color: #7b68ee;
+  --accent-color: #ff6b6b;
+  --text-dark: #2c3e50;
+  --text-light: #666;
+  --bg-light: #f8f9fa;
+  --shadow-light: 0 2px 10px rgba(0,0,0,0.1);
+  --shadow-medium: 0 4px 20px rgba(0,0,0,0.15);
+  --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+body {
+  font-family: 'Noto Sans', sans-serif;
+  line-height: 1.6;
+  color: var(--text-dark);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+/* 导航栏美化 */
+.navbar {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-light);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.navbar:hover {
+  box-shadow: var(--shadow-medium);
+}
+
+.navbar-item {
+  transition: all 0.3s ease;
+}
+
+.navbar-item:hover {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white !important;
+  border-radius: 8px;
+  transform: translateY(-2px);
+}
+
+/* Hero区域美化 */
+.hero {
+  background: var(--gradient-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="g"><stop offset="20%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="50%" stop-color="%23ffffff" stop-opacity="0.05"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><rect width="100%" height="100%" fill="url(%23g)"/></svg>');
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(2deg); }
+}
+
+.hero-body {
+  position: relative;
+  z-index: 1;
+  padding: 4rem 1.5rem;
+}
+
+.publication-title {
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  margin-bottom: 2rem;
+  animation: slideInUp 1s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.publication-authors {
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  animation: slideInUp 1s ease-out 0.2s both;
+}
+
+.publication-authors a {
+   color: #ffd700 !important;
+   font-weight: 600;
+   transition: all 0.3s ease;
+}
+
+.publication-authors a:hover {
+    color: #ffed4e !important;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    transform: scale(1.05);
+}
+
+/* 按钮美化 */
+.publication-links {
+  animation: slideInUp 1s ease-out 0.4s both;
+}
+
+.publication-links .button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  margin: 0.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.publication-links .button:hover {
+  background: white;
+  color: var(--primary-color);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  border-color: white;
+}
+
+/* 内容区域美化 */
+.section {
+  background: white;
+  margin: 2rem 0;
+  border-radius: 20px;
+  box-shadow: var(--shadow-medium);
+  position: relative;
+  overflow: hidden;
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-accent);
+}
+
+.container {
+  padding: 2rem;
+}
+
+.title.is-3 {
+  color: var(--text-dark);
+  position: relative;
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+}
+
+.title.is-3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--gradient-accent);
+  border-radius: 2px;
+}
+
+/* 图片美化 */
+.interpolation-image {
+  border-radius: 15px;
+  box-shadow: var(--shadow-medium);
+  transition: all 0.3s ease;
+  margin: 1.5rem 0;
+}
+
+.interpolation-image:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+
+/* 文本内容美化 */
+.content {
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.content p {
+  margin-bottom: 1.5rem;
+  text-align: justify;
+}
+
+.content ul li {
+  margin-bottom: 0.8rem;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.content ul li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+/* 卡片效果 */
+.column.is-four-fifths {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 2rem;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-light);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 页脚美化 */
+.footer {
+  background: var(--gradient-bg);
+  color: white;
+  margin-top: 3rem;
+  position: relative;
+}
+
+.footer .content {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.footer a {
+  color: #ffd700;
+  transition: all 0.3s ease;
+}
+
+.footer a:hover {
+  color: #ffed4e;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.footer .icon-link {
+    font-size: 25px;
+    color: white;
+    transition: all 0.3s ease;
+    padding: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.footer .icon-link:hover {
+  color: #ffd700;
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+/* 响应式设计优化 */
+@media (max-width: 768px) {
+  .hero-body {
+    padding: 2rem 1rem;
+  }
+  
+  .publication-title {
+    font-size: 2rem;
+  }
+  
+  .container {
+    padding: 1rem;
+  }
+  
+  .publication-links .button {
+    margin: 0.25rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* 滚动动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+/* 数学公式美化 */
+.MathJax {
+  font-size: 1.1em !important;
+}
+
+/* 表格美化 */
+table {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow-light);
+}
+
+/* 代码块美化 */
+pre, code {
+  background: var(--bg-light);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #e1e8ed;
+}
+
+.link-block a {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.dnerf {
+  font-variant: small-caps;
+}
+
+.teaser .hero-body {
+  padding-top: 0;
+  padding-bottom: 3rem;
+}
+
+.teaser {
+  font-family: 'Google Sans', sans-serif;
+}
+
+.publication-banner {
+  max-height: parent;
+}
+
+.publication-banner video {
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: none;
+  object-fit: fit;
+}
+
+.publication-header .hero-body {
+}
+
+.publication-title {
+    font-family: 'Google Sans', sans-serif;
+}
+
+.publication-authors {
+    font-family: 'Google Sans', sans-serif;
+}
+
+.publication-venue {
+    color: #555;
+    width: fit-content;
+    font-weight: bold;
+}
+
+.publication-awards {
+    color: #ff3860;
+    width: fit-content;
+    font-weight: bolder;
+}
+
+.author-block {
+  display: inline-block;
+}
+
+.publication-banner img {
+}
+
+.publication-video {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%;
+    overflow: hidden;
+    border-radius: 10px !important;
+}
+
+.publication-video iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.publication-body img {
+}
+
+.results-carousel {
+  overflow: hidden;
+}
+
+.results-carousel .item {
+  margin: 5px;
+  overflow: hidden;
+  border: 1px solid #bbb;
+  border-radius: 10px;
+  padding: 0;
+  font-size: 0;
+}
+
+.results-carousel video {
+  margin: 0;
+}
+
+.interpolation-panel {
+  background: #f5f5f5;
+  border-radius: 10px;
+}
+
+.interpolation-panel .interpolation-image {
+  width: 100%;
+  border-radius: 5px;
+}
+
+.interpolation-video-column {
+}
+
+.interpolation-panel .slider {
+  margin: 0 !important;
+}
+
+#interpolation-image-wrapper {
+  width: 100%;
+}
+#interpolation-image-wrapper img {
+  border-radius: 5px;
+}
+
+#interpolation-image-wrapper video {
+  height: 360px;
+  width: 480px
+}
