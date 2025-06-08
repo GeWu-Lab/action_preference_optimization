@@ -112,6 +112,12 @@
       box-shadow: 0 6px 25px rgba(0,0,0,0.3);
     }
 
+    /* 自定义容器宽度 */
+    .container.is-widescreen {
+      max-width: 85%;
+      margin: 0 auto;
+    }
+
     /* 图片居中样式 */
     .image-container {
       display: flex;
@@ -267,6 +273,11 @@
     
     /* 响应式设计 */
     @media (max-width: 768px) {
+      .container.is-widescreen {
+        max-width: 95%;
+        padding: 0 1rem;
+      }
+      
       .video-container {
         margin: 1rem 0;
       }
@@ -337,7 +348,7 @@
 
 <section class="hero">
   <div class="hero-body">
-    <div class="container is-max-desktop">
+    <div class="container is-widescreen">
       <div class="columns is-centered">
         <div class="column has-text-centered">
           <h1 class="title is-2 publication-title">Robotic Policy Learning via Human-assisted Action Preference Optimization</h1>
@@ -412,10 +423,10 @@
 </section>
 
 <section class="section">
-  <div class="container is-max-desktop">
+  <div class="container is-widescreen">
     <!-- Abstract. -->
     <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
+      <div class="column is-full">
         <h2 class="title is-3">
           <i class="fas fa-lightbulb" style="color: #f093fb; margin-right: 10px;"></i>
           Abstract
@@ -434,9 +445,9 @@
     </div>
   </div>
 
-  <div class="container is-max-desktop">
+  <div class="container is-widescreen">
     <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
+      <div class="column is-full">
         <h2 class="title is-3">
           <i class="fas fa-rocket" style="color: #667eea; margin-right: 10px;"></i>
           Introduction
@@ -475,9 +486,9 @@
     </div>
   </div>
 
-  <div class="container is-max-desktop">
+  <div class="container is-widescreen">
     <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
+      <div class="column is-full">
         <h2 class="title is-3">
           <i class="fas fa-cogs" style="color: #f5576c; margin-right: 10px;"></i>
           Method
@@ -547,9 +558,9 @@
 
   
 
-  <div class="container is-max-desktop">
+  <div class="container is-widescreen">
     <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
+      <div class="column is-full">
         <h2 class="title is-3">
           <i class="fas fa-chart-line" style="color: #4a90e2; margin-right: 10px;"></i>
           Experiment
@@ -665,9 +676,9 @@
     </div>
   </div>
 
-  <div class="container is-max-desktop">
+  <!-- <div class="container is-widescreen">
     <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
+      <div class="column is-full">
         <h2 class="title is-3">
           <i class="fas fa-flag-checkered" style="color: #ff6b6b; margin-right: 10px;"></i>
           Conclusion
@@ -683,7 +694,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </section>
 
 <script>
